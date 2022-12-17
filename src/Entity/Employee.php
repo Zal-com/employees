@@ -57,12 +57,16 @@ class Employee
     #[ORM\OneToMany(mappedBy: 'employee', targetEntity: Demand::class)]
     private Collection $demands;
 
+    #[ORM\OneToMany(mappedBy: 'employee', targetEntity: DeptEmp::class)]
+    private Collection $deptEmps;
+
     public function __construct()
     {
         $this->departments = new ArrayCollection();
         $this->managingStories = new ArrayCollection();
         $this->salaries = new ArrayCollection();
         $this->demands = new ArrayCollection();
+        $this->deptEmps = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -273,5 +277,35 @@ class Employee
 
     public function __toString() :string {
         return "{$this->first_name} {$this->last_name}";
+    }
+
+    /**
+     * @return Collection<int, DeptEmp>
+     */
+    public function getDeptEmps(): Collection
+    {
+        return $this->deptEmps;
+    }
+
+    public function addDeptEmp(DeptEmp $deptEmp): self
+    {
+        if (!$this->deptEmps->contains($deptEmp)) {
+            $this->deptEmps->add($deptEmp);
+            $deptEmp->setEmployee($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDeptEmp(DeptEmp $deptEmp): self
+    {
+        if ($this->deptEmps->removeElement($deptEmp)) {
+            // set the owning side to null (unless already changed)
+            if ($deptEmp->getEmployee() === $this) {
+                $deptEmp->setEmployee(null);
+            }
+        }
+
+        return $this;
     }
 }

@@ -34,9 +34,13 @@ class Department
     #[ORM\ManyToMany(targetEntity: Employee::class, inversedBy: 'departments')]
     private Collection $managers;
 
+    #[ORM\OneToMany(mappedBy: 'department', targetEntity: DeptEmp::class)]
+    private Collection $deptEmps;
+
     public function __construct()
     {
         $this->managers = new ArrayCollection();
+        $this->deptEmps = new ArrayCollection();
     }
 
     public function getId(): ?string
@@ -112,6 +116,36 @@ class Department
     public function removeManager(Employee $manager): self
     {
         $this->managers->removeElement($manager);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, DeptEmp>
+     */
+    public function getDeptEmps(): Collection
+    {
+        return $this->deptEmps;
+    }
+
+    public function addDeptEmp(DeptEmp $deptEmp): self
+    {
+        if (!$this->deptEmps->contains($deptEmp)) {
+            $this->deptEmps->add($deptEmp);
+            $deptEmp->setDepartment($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDeptEmp(DeptEmp $deptEmp): self
+    {
+        if ($this->deptEmps->removeElement($deptEmp)) {
+            // set the owning side to null (unless already changed)
+            if ($deptEmp->getDepartment() === $this) {
+                $deptEmp->setDepartment(null);
+            }
+        }
 
         return $this;
     }

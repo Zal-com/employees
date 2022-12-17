@@ -1,18 +1,74 @@
 {% extends 'base.html.twig' %}
 
+{% block title %}Employee{% endblock %}
+
 {% block body %}
-<table>
-    <tr>
-        <th>ID</th>
-        <th>Nom</th>
-        <th>Prenom</th>
-        <th>Email</th>
-    </tr>
-    <tr>
-        <td>{{ employee.id }}</td>
-        <td>{{ employee.lastName }}</td>
-        <td>{{ employee.firstName }}</td>
-        <td>{{ employee.email }}</td>
-    </tr>
-</table>
+    <h1>Employee</h1>
+
+    {% for message in app.flashes('error') %}
+    <div class="flash-error">
+        {{ message }}
+    </div>
+    {% endfor %}
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ employee.id }}</td>
+            </tr>
+            <tr>
+                <th>First_name</th>
+                <td>{{ employee.firstName }}</td>
+            </tr>
+            <tr>
+                <th>Last_name</th>
+                <td>{{ employee.lastName }}</td>
+            </tr>
+            <tr>
+                <th>Birth_date</th>
+                <td>{{ employee.birthDate ? employee.birthDate|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Gender</th>
+                <td>{{ employee.gender }}</td>
+            </tr>
+            <tr>
+                <th>Photo</th>
+                <td>{{ employee.photo }}</td>
+            </tr>
+            <tr>
+                <th>Email</th>
+                <td>{{ employee.email }}</td>
+            </tr>
+            <tr>
+                <th>Hire_date</th>
+                <td>{{ employee.hireDate ? employee.hireDate|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Salaries</th>
+                <td>
+                {% for salary in employee.salaries %}
+                <div>
+                    {{ salary.salary|format_currency('EUR', locale='be') }} (du {{ salary.fromDate|date("m/d/Y") }} au {{ salary.toDate|date("m/d/Y") }})
+                </div>
+                {% endfor %}
+                </td>
+            </tr>
+            <tr>
+                <th>Demandes</th>
+                <td>
+                {% for demand in employee.demands %}
+                    <p>{{ demand.type }} {{ demand.about }} {{ demand.status is null ? 'En attente': (demand.status==1 ? 'Acceptée':'Refusé')}}</p>
+                {% endfor %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_employee_index') }}">back to list</a>
+
+    <a href="{{ path('app_employee_edit', {'id': employee.id}) }}">edit</a>
+
+    {{ include('employee/_delete_form.html.twig') }}
 {% endblock %}

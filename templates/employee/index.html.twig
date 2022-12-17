@@ -1,20 +1,55 @@
 {% extends 'base.html.twig' %}
 
+{% block title %}Employee index{% endblock %}
+
 {% block body %}
-    <table>
-        <tr>
-            <th>ID</th>
-            <th>Nom</th>
-            <th>Prenom</th>
-            <th>Email</th>
-        </tr>
+    <h1>Employee index</h1>
+
+{% for label, messages in app.flashes %}
+    {% for message in messages %}
+        <div class="flash-{{ label }}">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endfor %}
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>First_name</th>
+                <th>Last_name</th>
+                <th>Birth_date</th>
+                <th>Gender</th>
+                <th>Photo</th>
+                <th>Email</th>
+                <th>Hire_date</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
         {% for employee in employees %}
-                <tr>
-                    <td><a href="{{ path('app_employee_show', {'id': employee.id}) }}">{{ employee.id }}</a></td>
-                    <td>{{ employee.lastName }}</td>
-                    <td>{{ employee.firstName }}</td>
-                    <td>{{ employee.email }}</td>
-                </tr>
+            <tr>
+                <td>{{ employee.id }}</td>
+                <td>{{ employee.firstName }}</td>
+                <td>{{ employee.lastName }}</td>
+                <td>{{ employee.birthDate ? employee.birthDate|date('Y-m-d') : '' }}</td>
+                <td>{{ employee.gender }}</td>
+                <td>{{ employee.photo }}</td>
+                <td>{{ employee.email }}</td>
+                <td>{{ employee.hireDate ? employee.hireDate|date('Y-m-d') : '' }}</td>
+                <td>
+                    <a href="{{ path('app_employee_show', {'id': employee.id}) }}">show</a>
+                    <a href="{{ path('app_employee_edit', {'id': employee.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="9">no records found</td>
+            </tr>
         {% endfor %}
+        </tbody>
     </table>
+
+    <a href="{{ path('app_employee_create') }}">Create new</a>
 {% endblock %}

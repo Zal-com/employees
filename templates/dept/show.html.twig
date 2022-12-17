@@ -11,8 +11,8 @@
     <tr>
         <td>{{ departement.id }}</td>
         <td>{{ departement.deptName }}</td>
-        <td>{{ departement.managers.current}}</td>
-        <td></td>
+        <td>{{ manager.lastName }} {{ manager.firstName }}</td>
+        <td><img src="images/{{ manager.photo }}"/></td>
     </tr>
 </table>
 {% endblock %}
