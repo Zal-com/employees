@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Nom</th>
+            <th>Prenom</th>
+            <th>Email</th>
+        </tr>
+        {% for employee in employees %}
+                <tr>
+                    <td><a href="{{ path('app_employee_show', {'id': employee.id}) }}">{{ employee.id }}</a></td>
+                    <td>{{ employee.lastName }}</td>
+                    <td>{{ employee.firstName }}</td>
+                    <td>{{ employee.email }}</td>
+                </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
