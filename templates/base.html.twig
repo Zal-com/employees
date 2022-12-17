@@ -4,13 +4,20 @@
         <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
+        <script src="https://kit.fontawesome.com/f92d7e8a24.js" crossorigin="anonymous"></script>
     </head>
         <nav>
             <a href="{{ path('app_home') }}">Home</a>
-            <a href="{{ path('app_dept') }}">Departements</a>
+            <a href="{{ path('app_dept_index') }}">Departements</a>
             <a href="{{ path('app_employee_index') }}">Employes</a>
+            <form action="{{ path('app_login') }}" method="POST">
+            <button type="submit"><i class="fa-solid fa-right-to-bracket"></i> Login</button>
+            </form>
         </nav>
     <body>
         {% block body %}{% endblock %}
+        <footer>
+            <img src="https://chart.googleapis.com/chart?cht=qr&chl=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DdQw4w9WgXcQ&chs=80x80&choe=UTF-8&chld=L|2" rel="nofollow" alt="qr code">
+        </footer>
     </body>
 </html>
