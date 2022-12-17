@@ -2,17 +2,18 @@
 
 namespace App\Controller;
 
+use App\Repository\DepartmentRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class DeptController extends AbstractController
 {
-    #[Route('/dept', name: 'app_dept')]
-    public function index(): Response
+    #[Route('/departements', name: 'app_dept')]
+    public function index(DepartmentRepository $depts): Response
     {
         return $this->render('dept/index.html.twig', [
-            'controller_name' => 'DeptController',
+            'departements' => $depts->findAll(),
         ]);
     }
 }
