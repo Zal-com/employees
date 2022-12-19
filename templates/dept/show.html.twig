@@ -11,8 +11,8 @@
     <tr>
         <td>{{ departement.id }}</td>
         <td>{{ departement.deptName }}</td>
-        <td>{{ manager.lastName }} {{ manager.firstName }}</td>
-        <td><img src="images/{{ manager.photo }}"/></td>
+        <td>{{ manager.lastName|default }} {{ manager.firstName|default('Pas de manager') }}</td>
+        <td><img style="max-height: 70px" src="{{ asset('images/' ~ departement.managers.current.photo|default('employee/no_image.png'))  }}"></td>
     </tr>
 </table>
 {% endblock %}

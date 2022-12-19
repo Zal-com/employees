@@ -1,22 +1,51 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <table>
-        <tr>
-            <th>ID</th>
-            <th>Nom</th>
-            <th>Manager</th>
-            <th>Description</th>
-            <th>Nbre Employes</th>
-        </tr>
-
-{% for departement in departements %}
+    <main class="d-flex flex flex-wrap flex-row justify-content-start align-items-start justify-content-sm-around">
+    {% for departement in departements %}
+        <div class="card" style="width: 18rem; margin-bottom: 25px">
+            <div class="card-body">
+                <img class="card-img mb-10" src="{{ asset('images/' ~ departement.managers.current.photo|default('employee/no_image.png'))}}">
+                <h5 class="card-title"><a class="text-decoration-none text-blue" href="{{ path('app_dept_show', {'id': departement.id}) }}">{{ departement.deptName }}</a></h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{ departement.managers.current|default('Pas de manager') }}</h6>
+                <p class="card-text">{{departement.description|default('Pas de description')}}</p>
+                {% set EmpCount = 0 %}
+                {% for employee in departement.deptEmps %}
+                    {% if employee.toDate == date('9999-01-01') %}
+                        {% set EmpCount = EmpCount + 1 %}
+                    {% endif %}
+                {% endfor %}
+                <h6 class="card-subtitle mb-1">{{ EmpCount }} employés</h6>
+            </div>
+                <div class="card-footer">
+                    <a href="#" class="card-link text-decoration-none text-black">Postes à pourvoir</a>
+                    <a href="#" class="card-link text-decoration-none text-black">R.O.I</a>
+                </div>
+        </div>
+    {% endfor %}
+    </main>
+    {#
     <tr>
-        <td><a href="{{ path('app_dept_show', {'id': departement.id }) }}">{{ departement.id }}</a></td>
+        <td>
+            <a href="{{ path('app_dept_show', {'id': departement.id }) }}">
+                {{ departement.id }}
+            </a>
+        </td>
         <td>{{ departement.deptName }}</td>
         <td>{{ departement.managers.current }}</td>
+        <td>
+            <img style="max-height: 70px" src="{{ asset('images/' ~ departement.managers.current.photo|default('employee/no_image.png'))  }}">
+        </td>
+        <td>{{ departement.description|default('Pas de description') }}</td>
+        {% set EmpCount = 0 %}
+        {% for employee in departement.deptEmps %}
+            {% if employee.toDate == date('9999-01-01') %}
+                {% set EmpCount = EmpCount + 1 %}
+            {% endif %}
+        {% endfor %}
+        <td>{{ EmpCount }}</td>
 
     </tr>
-    {% endfor %}
-    </table>
+    #}
+
 {% endblock %}

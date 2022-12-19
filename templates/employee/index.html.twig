@@ -35,7 +35,7 @@
                 <td>{{ employee.lastName }}</td>
                 <td>{{ employee.birthDate ? employee.birthDate|date('Y-m-d') : '' }}</td>
                 <td>{{ employee.gender }}</td>
-                <td>{{ employee.photo }}</td>
+                <td><img style="height: 70px" src="{{ asset('images/' ~ employee.photo|default('employee/no_image.png'))  }}"></td>
                 <td>{{ employee.email }}</td>
                 <td>{{ employee.hireDate ? employee.hireDate|date('Y-m-d') : '' }}</td>
                 <td>

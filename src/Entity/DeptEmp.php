@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\DeptEmpRepository;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -12,7 +13,7 @@ class DeptEmp
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Column(name: 'emp_no', type: 'integer')]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
@@ -21,12 +22,12 @@ class DeptEmp
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $to_date = null;
 
-    #[ORM\ManyToOne(inversedBy: 'deptEmps')]
-    private ?Employee $employee = null;
+    #[ORM\OneToMany(mappedBy: 'emp_no', targetEntity: Employee::class)]
+    private ?Collection $employee = null;
 
-    #[ORM\ManyToOne(inversedBy: 'deptEmps')]
+    #[ORM\OneToMany(mappedBy: 'dept_no', targetEntity: Department::class)]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Department $department = null;
+    private ?Collection $department = null;
 
     public function getId(): ?int
     {
