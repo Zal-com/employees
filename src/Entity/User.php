@@ -3,25 +3,24 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 #[ORM\Table('users')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Column(name: 'emp_no')]
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
     private ?string $email = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: 'json')]
     private array $roles = [];
 
     /**
@@ -30,8 +29,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
-    #[ORM\Column(type: 'boolean')]
-    private $isVerified = false;
+    #[ORM\JoinTable(name: 'employees')]
+    #[ORM\JoinColumn(name: 'emp_no', referencedColumnName: 'emp_no')]
+    #[ORM\OneToOne(targetEntity: Employee::class, mappedBy: 'employees')]
+    private ?Employee $employee = null;
 
     public function getId(): ?int
     {
@@ -68,7 +69,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $roles = $this->roles;
         // guarantee every user at least has ROLE_USER
         $roles[] = 'ROLE_USER';
-        //dump($roles);die;
+
         return array_unique($roles);
     }
 
@@ -103,14 +104,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         // $this->plainPassword = null;
     }
 
-    public function isVerified(): bool
+    public function getEmployee(): ?Employee
     {
-        return $this->isVerified;
+        return $this->employee;
     }
 
-    public function setIsVerified(bool $isVerified): self
+    public function setEmployee(Employee $employee): self
     {
-        $this->isVerified = $isVerified;
+        $this->employee = $employee;
 
         return $this;
     }

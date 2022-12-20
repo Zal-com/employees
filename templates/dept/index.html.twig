@@ -3,6 +3,7 @@
 {% block body %}
     <main class="d-flex flex flex-wrap flex-row justify-content-start align-items-start justify-content-sm-around">
     {% for departement in departements %}
+        {% set array = departement.deptEmps.toArray %}
         <div class="card" style="width: 18rem; margin-bottom: 25px">
             <div class="card-body">
                 <img class="card-img mb-10" src="{{ asset('images/' ~ departement.managers.current.photo|default('employee/no_image.png'))}}">

@@ -57,6 +57,9 @@ class Employee
     #[ORM\OneToMany(mappedBy: 'employee', targetEntity: Demand::class)]
     private Collection $demands;
 
+    #[ORM\JoinTable('dept_emp')]
+    #[ORM\JoinColumn(name: 'emp_no', referencedColumnName: 'emp_no')]
+    #[ORM\InverseJoinColumn(name:'dept_no', referencedColumnName: 'dept_no')]
     #[ORM\OneToMany(mappedBy: 'employee', targetEntity: DeptEmp::class)]
     private Collection $deptEmps;
 

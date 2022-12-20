@@ -16,15 +16,9 @@ class DeptController extends AbstractController
     #[Route('/', name: 'app_dept_index')]
     public function index(DepartmentRepository $depts): Response
     {
-        $deptartments = [];
-
-/*
-        foreach ($depts->findAll() as $department) {
-            dd($department->getManagers()->current()->getPhoto());
-        }
-*/
         return $this->render('dept/index.html.twig', [
             'departements' => $depts->findAll(),
+            'employee' => $this->getUser()
         ]);
     }
     #[Route('/{id}', name:'app_dept_show', methods: ['GET'])]
