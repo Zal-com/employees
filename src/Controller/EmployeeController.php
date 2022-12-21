@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
+use Symfony\Component\Routing\Requirement\Requirement;
 
 #[Route('/employees')]
 class EmployeeController extends AbstractController
@@ -22,7 +23,7 @@ class EmployeeController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_employee_show', methods: ['GET'])]
+    #[Route('/{id}', name: 'app_employee_show', methods: ['GET'], requirements: ['id' => Requirement::DIGITS])]
     public function show(Employee $employee): Response{
         return $this->render('employee/show.html.twig', [
             'employee' => $employee,
@@ -53,6 +54,23 @@ class EmployeeController extends AbstractController
         ]);
     }
 
+    #[Route('/{id}', name: 'app_employee_delete', methods: ['POST'] )]
+    public function delete(Request $request, Employee $employee, EmployeeRepository $employeeRepository): Response
+    {
+        if ($this->isCsrfTokenValid('delete'.$employee->getId(), $request->request->get('_token'))) {
+            try {
+                $employeeRepository->remove($employee, true);
+            } catch(ForeignKeyConstraintViolationException $e) {
+                //dump($e);die;
+                $this->addFlash('error','This employee has salaries!');
+
+                return $this->redirectToRoute('app_employee_show', ['id' => $employee->getId()], 303);
+            }
+        }
+
+        return $this->redirectToRoute('app_employee_index', [], Response::HTTP_SEE_OTHER);
+    }
+
     #[Route('/create', name: 'app_employee_create', methods: ['GET', 'POST'])]
     public function new(Request $request, EmployeeRepository $employeeRepository): Response
     {
@@ -70,22 +88,5 @@ class EmployeeController extends AbstractController
             'employee' => $employee,
             'form' => $form,
         ]);
-    }
-
-    #[Route('/{id}', name: 'app_employee_delete', methods: ['POST'])]
-    public function delete(Request $request, Employee $employee, EmployeeRepository $employeeRepository): Response
-    {
-        if ($this->isCsrfTokenValid('delete'.$employee->getId(), $request->request->get('_token'))) {
-            try {
-                $employeeRepository->remove($employee, true);
-            } catch(ForeignKeyConstraintViolationException $e) {
-                //dump($e);die;
-                $this->addFlash('error','This employee has salaries!');
-
-                return $this->redirectToRoute('app_employee_show', ['id' => $employee->getId()], 303);
-            }
-        }
-
-        return $this->redirectToRoute('app_employee_index', [], Response::HTTP_SEE_OTHER);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Department;
+use App\Entity\Employee;
 use App\Repository\DepartmentRepository;
 use App\Repository\DeptManagerRepository;
 use App\Repository\EmployeeRepository;

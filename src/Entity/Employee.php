@@ -60,8 +60,9 @@ class Employee
     #[ORM\JoinTable('dept_emp')]
     #[ORM\JoinColumn(name: 'emp_no', referencedColumnName: 'emp_no')]
     #[ORM\InverseJoinColumn(name:'dept_no', referencedColumnName: 'dept_no')]
-    #[ORM\OneToMany(mappedBy: 'employee', targetEntity: DeptEmp::class)]
+    #[ORM\ManyToMany(mappedBy: 'employee', targetEntity: Department::class)]
     private Collection $deptEmps;
+    //Storie departments
 
     public function __construct()
     {
