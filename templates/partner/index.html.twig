@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <main class="d-flex flex flex-wrap flex-row justify-content-start align-items-start justify-content-sm-around">
+        {% for partenaire in partenaires %}
+            <a href="{{ partenaire.url }}" class="text-decoration-none">
+                <div class="card border-0 d-flex" style="height: 200px; width: 200px">
+                    <img class="card-img bg-dark bg-opacity-10 border-0 p-3" src="{{ asset('images/') ~ partenaire.logo }}" alt="Card image">
+                    <div class="card-img-overlay align-content-center">
+                        <p class="text-white text-center">{{ partenaire.title }}</p>
+                    </div>
+                </div>
+            </a>
+        {% endfor %}
+    </main>
+{% endblock %}
