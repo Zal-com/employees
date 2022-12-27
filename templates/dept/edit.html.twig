@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Department{% endblock %}
+
+{% block body %}
+    <h1>Edit Department</h1>
+
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="flash-{{ label }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    {{ include('dept/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_dept_index') }}">back to list</a>
+
+{#  {{ include('employee/_delete_form.html.twig') }} #}
+{% endblock %}

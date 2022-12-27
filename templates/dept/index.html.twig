@@ -22,7 +22,7 @@
                     <a href="#" class="card-link text-decoration-none text-black">Postes à pourvoir</a>
                     {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                         {% if departement.id == app.user.departments.current.id|default or is_granted("ROLE_ADMIN") %}
-                            <a href="#" class="card-link text-decoration-none text-black">R.O.I</a>
+                            <a href="{{ departement.roiUrl }}" class="card-link text-decoration-none text-black">R.O.I</a>
                         {% endif %}
                     {% endif %}
                 </div>

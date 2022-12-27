@@ -21,7 +21,7 @@ security:
                 path: app_logout
             custom_authenticator: App\Security\LoginFormAuthenticator
     role_hierarchy:
-        ROLE_ADMIN: ROLE_USER
+        ROLE_ADMIN: ROLE_USER, ROLE_MANAGER
         ROLE_SUPER_ADMIN: [ ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH ]
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
@@ -33,6 +33,7 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
          - { path: ^/admin, roles: ROLE_ADMIN }
+         - { path: ^/manage, roles: ROLE_MANAGER }
          - { path: ^/profile, roles: ROLE_USER }
 
 when@test:

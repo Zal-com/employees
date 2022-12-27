@@ -17,13 +17,13 @@
         <thead>
             <tr>
                 <th>Id</th>
-                <th>First_name</th>
-                <th>Last_name</th>
-                <th>Birth_date</th>
-                <th>Gender</th>
+                <th>Prénom</th>
+                <th>Nom</th>
+                <th>Date de naissance</th>
+                <th>Genre</th>
                 <th>Photo</th>
                 <th>Email</th>
-                <th>Hire_date</th>
+                <th>Date embauche</th>
                 <th>actions</th>
             </tr>
         </thead>
@@ -33,11 +33,11 @@
                 <td>{{ employee.id }}</td>
                 <td>{{ employee.firstName }}</td>
                 <td>{{ employee.lastName }}</td>
-                <td>{{ employee.birthDate ? employee.birthDate|date('Y-m-d') : '' }}</td>
+                <td>{{ employee.birthDate ? employee.birthDate|date('d/m/Y') : '' }}</td>
                 <td>{{ employee.gender }}</td>
                 <td><img style="height: 70px" src="{{ asset('images/' ~ employee.photo|default('employee/no_image.png'))  }}"></td>
                 <td>{{ employee.email }}</td>
-                <td>{{ employee.hireDate ? employee.hireDate|date('Y-m-d') : '' }}</td>
+                <td>{{ employee.hireDate ? employee.hireDate|date('d/m/Y') : '' }}</td>
                 <td>
                     <a href="{{ path('app_employee_show', {'id': employee.id}) }}">show</a>
                     <a href="{{ path('app_employee_edit', {'id': employee.id}) }}">edit</a>

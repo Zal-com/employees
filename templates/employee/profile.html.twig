@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion de profil{% endblock %}
+
+{% block body %}
+<h1>Gestion de profil</h1>
+
+    <div class="container">
+        <div class="card flex-row flex-wrap">
+            <div class="card-header border-0">
+                <img src="{{ asset('images/') ~ employee.photo|default('employee/no_image.png') }}" alt="" style="max-height: 200px">
+            </div>
+            <div class="card-block px-2 p-2">
+                <h4 class="card-title">{{ employee.firstName }} {{ employee.lastName }}</h4>
+                <p class="card-text"><b>N° d'identification : </b>{{ employee.id }}</p>
+                <p class="card-text"><b>Departement : </b>{{ employee.departments.current.deptName|default }}</p>
+                <p class="card-text"><b>E-mail : </b>{{ employee.email }}</p>
+                <a href="#" class="btn btn-secondary">Modifier la photo</a>
+                <a href="#" class="btn btn-danger">Changer le mot de passe</a>
+
+            </div>
+            <div class="w-100"></div>
+            {% if is_granted("ROLE_ADMIN") %}
+            <div class="card-footer w-100 text-muted">
+                <a href="{{ path('app_admin') }}" class="text-decoration-none text-black float-end">Administration</a>
+            </div>
+            {% endif %}
+        </div>
+{% endblock %}

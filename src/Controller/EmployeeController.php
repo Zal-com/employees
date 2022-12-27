@@ -33,6 +33,7 @@ class EmployeeController extends AbstractController
     #[Route('/{id}/edit', name: 'app_employee_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Employee $employee, EmployeeRepository $employeeRepository): Response
     {
+        $this->denyAccessUnlessGranted("ROLE_ADMIN", null, 'User tried to access page without having permissions');
         $form = $this->createForm(EmployeeType::class, $employee);
         $form->handleRequest($request);
 
@@ -74,6 +75,7 @@ class EmployeeController extends AbstractController
     #[Route('/create', name: 'app_employee_create', methods: ['GET', 'POST'])]
     public function new(Request $request, EmployeeRepository $employeeRepository): Response
     {
+        $this->denyAccessUnlessGranted("ROLE_ADMIN", null, "User tried to access page without having permissions");
         $employee = new Employee();
         $form = $this->createForm(EmployeeType::class, $employee);
         $form->handleRequest($request);
@@ -88,5 +90,15 @@ class EmployeeController extends AbstractController
             'employee' => $employee,
             'form' => $form,
         ]);
+    }
+
+    #[Route('/profile', name: 'app_employee_profile', methods: ['GET', 'POST'])]
+    public function profile(EmployeeRepository $employees): Response
+    {
+     $this->denyAccessUnlessGranted("ROLE_USER");
+
+     return $this->render('employee/profile.html.twig', [
+         'employee' => $this->getUser()
+     ]);
     }
 }

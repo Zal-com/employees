@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Zone d'administration</h1>
+    <h3>Departements</h3>
+    <div class="container-fluid mb-5">
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Nom</th>
+                <th>Manager</th>
+                <th></th>
+            </tr>
+            </thead>
+            {% for department in departments %}
+                <tr>
+                    <td>{{ department.id }}</td>
+                    <td>{{ department.deptName }}</td>
+                    <td>{{ department.managers.current.lastName|default }} {{ department.managers.current.firstName|default }}</td>
+                    <td><a href="{{ path('app_dept_edit', {'id': department.id }) }}" class="btn btn-primary">Modifier</a></td>
+                </tr>
+            {% endfor %}
+        </table>
+        <a href="#" class="btn btn-success">Ajouter un département</a>
+    </div>
+    <h3>Employés</h3>
+    <div class="container-fluid mb-5">
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>Departement</th>
+                <th>Salaire</th>
+                <th></th>
+            </tr>
+            </thead>
+            {% for employee in employees %}
+                <tr>
+                    <td>{{ employee.id }}</td>
+                    <td>{{ employee.lastName|default }}</td>
+                    <td>{{ employee.firstName|default }}</td>
+                    <td>{{ employee.departments.current.deptName|default }}</td>
+                    <td>{{ employee.salaries.current.salary|default('----------') ~ ' €' }}</td>
+                    <td><a href="#" class="btn btn-primary">Demandes</a></td>
+                    <td><a href="#" class="btn btn-primary">Modifier</a></td>
+                </tr>
+            {% endfor %}
+        </table>
+        <a href="#" class="btn btn-success">Ajouter un employé</a>
+    </div>
+{% endblock body %}
