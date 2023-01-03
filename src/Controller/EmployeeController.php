@@ -2,12 +2,15 @@
 
 namespace App\Controller;
 
+use App\Entity\DeptEmp;
 use App\Entity\Employee;
 use App\Form\EmployeeType;
+use App\Repository\DeptEmpRepository;
 use App\Repository\EmployeeRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use Symfony\Component\Routing\Requirement\Requirement;
@@ -55,7 +58,7 @@ class EmployeeController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_employee_delete', methods: ['POST'] )]
+    #[Route('/{id}', name: 'app_employee_delete', methods: ['POST'], requirements: ['id' => Requirement::DIGITS])]
     public function delete(Request $request, Employee $employee, EmployeeRepository $employeeRepository): Response
     {
         if ($this->isCsrfTokenValid('delete'.$employee->getId(), $request->request->get('_token'))) {
@@ -73,17 +76,29 @@ class EmployeeController extends AbstractController
     }
 
     #[Route('/create', name: 'app_employee_create', methods: ['GET', 'POST'])]
-    public function new(Request $request, EmployeeRepository $employeeRepository): Response
+    public function new(Request $request, EmployeeRepository $employeeRepository, Employee $employee, UserPasswordHasherInterface $passwordHasher): Response
     {
         $this->denyAccessUnlessGranted("ROLE_ADMIN", null, "User tried to access page without having permissions");
-        $employee = new Employee();
+
         $form = $this->createForm(EmployeeType::class, $employee);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $employeeRepository->save($employee, true);
+            // Trouver l'id du dernier employé
+            $lastEmp = $employeeRepository->findBy([], ['id' => 'DESC'], 1, 0)[0]->getId();
+            $id = (int) $lastEmp+1;
 
-            return $this->redirectToRoute('app_employee_index', [], Response::HTTP_SEE_OTHER);
+            $employee->setId($id);
+            dd($employee);
+            //generate random password and sets it
+            $random = random_bytes(10);
+
+            $employee->setPassword($passwordHasher->hashPassword($employee, $random));
+            $employeeRepository->save($employee, true);
+            dd($random);
+            //End password generation
+
+            return $this->redirectToRoute('app_employee_index', ['pass' => $random], Response::HTTP_SEE_OTHER);
         }
 
         return $this->renderForm('employee/create.html.twig', [

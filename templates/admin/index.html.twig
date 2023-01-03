@@ -22,7 +22,7 @@
                 </tr>
             {% endfor %}
         </table>
-        <a href="#" class="btn btn-success">Ajouter un département</a>
+        <a href="{{ path('app_dept_create') }}" class="btn btn-success">Ajouter un département</a>
     </div>
     <h3>Employés</h3>
     <div class="container-fluid mb-5">
@@ -44,11 +44,15 @@
                     <td>{{ employee.firstName|default }}</td>
                     <td>{{ employee.departments.current.deptName|default }}</td>
                     <td>{{ employee.salaries.current.salary|default('----------') ~ ' €' }}</td>
+                    {% if employee.demands.last.status|default != 1  %}
                     <td><a href="#" class="btn btn-primary">Demandes</a></td>
-                    <td><a href="#" class="btn btn-primary">Modifier</a></td>
+                        {% else %}
+                            <td><button href="#" class="btn btn-primary" disabled>Demandes</button></td>
+                    {% endif %}
+                    <td><a href="{{ path('app_employee_edit', {'id' : employee.id}) }}" class="btn btn-primary">Modifier</a></td>
                 </tr>
             {% endfor %}
         </table>
-        <a href="#" class="btn btn-success">Ajouter un employé</a>
+        <a href="{{ path('app_employee_create') }}" class="btn btn-success">Ajouter un employé</a>
     </div>
 {% endblock body %}

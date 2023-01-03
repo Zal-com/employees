@@ -13,9 +13,14 @@
         {% endfor %}
     {% endfor %}
 
-    {{ include('dept/_form.html.twig', {'button_label': 'Update'}) }}
+    {{ dump(app.request.uri) }}
+    {%  if route == 'create' %}
+        {{ include('dept/_form.html.twig', {'button_label': 'Create'}) }}
+    {% else %}
+        {{ include('dept/_form.html.twig', {'button_label': 'Update'}) }}
+    {% endif %}
 
     <a href="{{ path('app_dept_index') }}">back to list</a>
 
-{#  {{ include('employee/_delete_form.html.twig') }} #}
+    {#  {{ include('employee/_delete_form.html.twig') }} #}
 {% endblock %}

@@ -8,7 +8,7 @@
     <div class="container">
         <div class="card flex-row flex-wrap">
             <div class="card-header border-0">
-                <img src="{{ asset('images/') ~ employee.photo|default('employee/no_image.png') }}" alt="" style="max-height: 200px">
+                <img src="{{ asset('images/' ~ employee.photo|default('employee/no_image.png')) }}" alt="" style="max-height: 200px">
             </div>
             <div class="card-block px-2 p-2">
                 <h4 class="card-title">{{ employee.firstName }} {{ employee.lastName }}</h4>

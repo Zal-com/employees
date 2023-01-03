@@ -3,17 +3,13 @@
 namespace App\Controller;
 
 use App\Entity\Department;
-use App\Entity\Employee;
 use App\Form\DeptType;
 use App\Repository\DepartmentRepository;
-use App\Repository\DeptManagerRepository;
-use App\Repository\EmployeeRepository;
-use Doctrine\DBAL\Types\Type;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Http\Util\TargetPathTrait;
 
 #[Route('/departements')]
 class DeptController extends AbstractController
@@ -65,7 +61,7 @@ class DeptController extends AbstractController
 
                 $this->addFlash('success','The department has been successfully updated.');
 
-                return $this->redirectToRoute($request->headers->get('referer'), [], Response::HTTP_SEE_OTHER);
+                return $this->redirectToRoute('app_dept_index', [], Response::HTTP_SEE_OTHER);
             } else {
                 $this->addFlash('error','The department has not been updated.');
             }
@@ -74,6 +70,51 @@ class DeptController extends AbstractController
         return $this->renderForm('dept/edit.html.twig', [
             'department' => $dept,
             'form' => $form,
+            'route' => 'edit',
         ]);
     }
+
+    #[Route('/create', name: 'app_dept_create', methods: ['GET', 'POST'])]
+    public function create(Request $request, Department $dept, DepartmentRepository $deptRepo): Response{
+        $this->denyAccessUnlessGranted("ROLE_MANAGER");
+
+        $form = $this->createForm(DeptType::class, $dept);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted()) {
+            if($form->isValid()) {
+
+                //Trouver l'id du dernier departement
+                $lastDept = $deptRepo->findBy([], ['id' => 'DESC'], 1, 0)[0]->getId();
+
+                //enlever le prefixe et convertir le numero en int pour l'incrementer
+                $id = (int)substr($lastDept, 1, strlen($lastDept));
+                $id++;
+
+                $id = (string)$id;
+
+                if (strlen($id) == 2) {
+                    $id = 'd0' . $id;
+                } else if (strlen($id) == 3){
+                    $id = 'd' . $id;
+                }
+
+                $dept->setId($id);
+                $deptRepo->save($dept, true);
+
+                $this->addFlash('success','The department has been successfully created.');
+
+                return $this->redirectToRoute('app_admin', [], Response::HTTP_SEE_OTHER);
+            } else {
+                $this->addFlash('error','The department has not been updated.');
+            }
+        }
+
+        return $this->renderForm('dept/edit.html.twig', [
+            'department' => $dept,
+            'form' => $form,
+            'route' => 'create',
+        ]);
+    }
+
 }

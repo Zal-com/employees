@@ -21,7 +21,7 @@ class Demand
     private ?string $about = null;
 
     #[ORM\Column(nullable: true)]
-    private ?bool $status = null;
+    private ?int $status = null;
 
     #[ORM\ManyToOne(targetEntity: Employee::class, inversedBy: 'demands')]
     #[ORM\JoinColumn(name: 'emp_no', referencedColumnName: 'emp_no', nullable: false)]
@@ -56,12 +56,12 @@ class Demand
         return $this;
     }
 
-    public function isStatus(): ?bool
+    public function getStatus(): ?int
     {
         return $this->status;
     }
 
-    public function setStatus(?bool $status): self
+    public function setStatus(?int $status): self
     {
         $this->status = $status;
 

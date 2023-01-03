@@ -17,7 +17,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Employee implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
     #[ORM\Column(name: '`emp_no`', type: 'integer')]
     private ?int $id = null;
 
@@ -87,6 +86,12 @@ class Employee implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->id;
     }
 
+    public function setId($id) : self
+    {
+        $this->id = $id;
+
+        return $this;
+    }
     public function getFirstName(): ?string
     {
         return $this->first_name;

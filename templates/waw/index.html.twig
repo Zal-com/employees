@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Women At Work{% endblock %}
+
+{% block body %}
+
+    {{ render_chart(chart, {'data-controller': 'mychart'}) }}
+
+{% endblock %}

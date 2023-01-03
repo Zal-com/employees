@@ -12,7 +12,6 @@ use Doctrine\ORM\Mapping as ORM;
 class Department
 {
     #[ORM\Id]
-    #[ORM\None]
     #[ORM\Column(name: '`dept_no`', type: 'string')]
     private ?string $id = null;
 
@@ -92,6 +91,12 @@ class Department
         return $this->roi_url;
     }
 
+    public function setId(string $id): self
+    {
+        $this->id = $id;
+
+        return $this;
+    }
     public function setRoiUrl(string $roi_url): self
     {
         $this->roi_url = $roi_url;
@@ -151,5 +156,9 @@ class Department
         }
 
         return $this;
+    }
+
+    public function __toString(){
+        return $this->dept_name;
     }
 }
