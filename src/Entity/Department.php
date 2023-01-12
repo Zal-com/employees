@@ -36,7 +36,7 @@ class Department
     #[ORM\JoinTable(name: 'dept_emp')]
     #[ORM\JoinColumn(name: 'dept_no', referencedColumnName: 'dept_no')]
     #[ORM\InverseJoinColumn(name:'emp_no', referencedColumnName: 'emp_no')]
-    #[ORM\ManyToMany(targetEntity: DeptEmp::class, inversedBy: 'departments')]
+    #[ORM\OneToMany(targetEntity: DeptEmp::class, mappedBy: 'departments')]
     private Collection $deptEmps;
 
     public function __construct()

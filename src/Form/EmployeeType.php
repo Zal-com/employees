@@ -6,6 +6,7 @@ use App\Entity\Department;
 use App\Entity\Employee;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -17,7 +18,9 @@ class EmployeeType extends AbstractType
         $builder
             ->add('first_name')
             ->add('last_name')
-            ->add('birth_date')
+            ->add('birth_date', DateType::class, [
+                'widget' => 'single_text'
+            ])
             ->add('gender',
                 ChoiceType::class, [
                     'choices'  => [
@@ -29,7 +32,9 @@ class EmployeeType extends AbstractType
                 ])
             ->add('photo')
             ->add('email')
-            ->add('hire_date')
+            ->add('hire_date', DateType::class, [
+                'widget' => 'single_text',
+            ])
             ->add('departments', EntityType::class, [
                 'class' => Department::class,
                 'multiple' => true,

@@ -11,23 +11,21 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table('`dept_emp`')]
 class DeptEmp
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(name: 'emp_no', type: 'integer')]
-    private ?int $id = null;
-
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $from_date = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $to_date = null;
 
-    #[ORM\OneToMany(mappedBy: 'emp_no', targetEntity: Employee::class)]
-    private ?Collection $employee = null;
+    #[ORM\Id]
+    #[ORM\Column(name: 'emp_no')]
+    #[ORM\ManyToOne(inversedBy: 'emp_no', targetEntity: Employee::class)]
+    private ?Employee $employee = null;
 
-    #[ORM\OneToMany(mappedBy: 'dept_no', targetEntity: Department::class)]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Collection $department = null;
+    #[ORM\Id]
+    #[ORM\Column(name: 'dept_no')]
+    #[ORM\ManyToOne(inversedBy: 'dept_no', targetEntity: Department::class)]
+    private ?Department $department = null;
 
     public function getId(): ?int
     {

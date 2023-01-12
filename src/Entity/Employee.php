@@ -61,7 +61,7 @@ class Employee implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\JoinTable('dept_emp')]
     #[ORM\JoinColumn(name: 'emp_no', referencedColumnName: 'emp_no')]
     #[ORM\InverseJoinColumn(name:'dept_no', referencedColumnName: 'dept_no')]
-    #[ORM\ManyToMany(mappedBy: 'employee', targetEntity: Department::class)]
+    #[ORM\OneToMany(mappedBy: 'employee', targetEntity: DeptEmp::class)]
     private Collection $deptEmps;
 
     #[ORM\Column(length: 150)]

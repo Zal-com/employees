@@ -2,9 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\Department;
 use App\Entity\DeptEmp;
 use App\Entity\Employee;
 use App\Form\EmployeeType;
+use App\Repository\DepartmentRepository;
 use App\Repository\DeptEmpRepository;
 use App\Repository\EmployeeRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -34,7 +36,7 @@ class EmployeeController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_employee_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Employee $employee, EmployeeRepository $employeeRepository): Response
+    public function edit(Request $request, Employee $employee, EmployeeRepository $employeeRepository, DeptEmpRepository $deptEmpRepo): Response
     {
         $this->denyAccessUnlessGranted("ROLE_ADMIN", null, 'User tried to access page without having permissions');
         $form = $this->createForm(EmployeeType::class, $employee);
@@ -42,7 +44,11 @@ class EmployeeController extends AbstractController
 
         if ($form->isSubmitted()) {
             if($form->isValid()) {
+
+                $this->changeDepartment($deptEmpRepo, $employee);
+                dd($request);
                 $employeeRepository->save($employee, true);
+
 
                 $this->addFlash('success','The employee has been successfully updated.');
 
@@ -76,7 +82,7 @@ class EmployeeController extends AbstractController
     }
 
     #[Route('/create', name: 'app_employee_create', methods: ['GET', 'POST'])]
-    public function new(Request $request, EmployeeRepository $employeeRepository, Employee $employee, UserPasswordHasherInterface $passwordHasher): Response
+    public function new(Request $request, EmployeeRepository $employeeRepository, Employee $employee, DepartmentRepository $deptRepo, DeptEmpRepository $deptEmpRepo, DeptEmp $deptEmp, UserPasswordHasherInterface $passwordHasher): Response
     {
         $this->denyAccessUnlessGranted("ROLE_ADMIN", null, "User tried to access page without having permissions");
 
@@ -84,18 +90,32 @@ class EmployeeController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
             // Trouver l'id du dernier employé
             $lastEmp = $employeeRepository->findBy([], ['id' => 'DESC'], 1, 0)[0]->getId();
             $id = (int) $lastEmp+1;
 
             $employee->setId($id);
-            dd($employee);
             //generate random password and sets it
             $random = random_bytes(10);
 
             $employee->setPassword($passwordHasher->hashPassword($employee, $random));
             $employeeRepository->save($employee, true);
-            dd($random);
+
+            $dept = new DeptEmp();
+            $dept->setEmployee($employee);
+            $dept->setFromDate(new \DateTime('now'));
+            $dept->setToDate(new \DateTime('31-12-9999'));
+            $dept->setDepartment($deptRepo->find($request->get('employee')['departments'][0]));
+
+            try{
+                $deptEmpRepo->save($dept, true);
+            }
+            catch(ForeignKeyConstraintViolationException $e){
+                dd($dept->getEmployee()->getId());
+            }
+
+
             //End password generation
 
             return $this->redirectToRoute('app_employee_index', ['pass' => $random], Response::HTTP_SEE_OTHER);
@@ -115,5 +135,14 @@ class EmployeeController extends AbstractController
      return $this->render('employee/profile.html.twig', [
          'employee' => $this->getUser()
      ]);
+    }
+
+    private function changeDepartment(DeptEmpRepository $deptEmpRepo, Employee $employee){
+
+        $currentPosition = $employee->getDeptEmps()->current();
+
+        dd($currentPosition);
+
+        return 0;
     }
 }

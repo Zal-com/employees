@@ -102,6 +102,8 @@ class DeptController extends AbstractController
                 $dept->setId($id);
                 $deptRepo->save($dept, true);
 
+                dd('referrer -> ' . $request->get('referrer'));
+
                 $this->addFlash('success','The department has been successfully created.');
 
                 return $this->redirectToRoute('app_admin', [], Response::HTTP_SEE_OTHER);
