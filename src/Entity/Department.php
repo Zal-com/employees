@@ -159,6 +159,6 @@ class Department
     }
 
     public function __toString(){
-        return $this->dept_name;
+        return $this->id;
     }
 }

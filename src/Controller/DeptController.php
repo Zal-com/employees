@@ -19,7 +19,7 @@ class DeptController extends AbstractController
     {
         return $this->render('dept/index.html.twig', [
             'departements' => $depts->findAll(),
-            'employee' => $this->getUser()
+            'user' => $this->getUser()
         ]);
     }
     #[Route('/{id}', name:'app_dept_show', methods: ['GET'], requirements: ['id'=>'^d[0-9]+'])]

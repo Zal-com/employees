@@ -44,9 +44,11 @@ class EmployeeController extends AbstractController
 
         if ($form->isSubmitted()) {
             if($form->isValid()) {
+                $file = $form->get('photo')->getData();
+                $file->move('../public/images/employee', $file->getClientOriginalName());
 
-                $this->changeDepartment($deptEmpRepo, $employee);
-                dd($request);
+                $employee->setPhoto('employee/' . $file->getClientOriginalName());
+
                 $employeeRepository->save($employee, true);
 
 
@@ -71,7 +73,6 @@ class EmployeeController extends AbstractController
             try {
                 $employeeRepository->remove($employee, true);
             } catch(ForeignKeyConstraintViolationException $e) {
-                //dump($e);die;
                 $this->addFlash('error','This employee has salaries!');
 
                 return $this->redirectToRoute('app_employee_show', ['id' => $employee->getId()], 303);
@@ -82,7 +83,13 @@ class EmployeeController extends AbstractController
     }
 
     #[Route('/create', name: 'app_employee_create', methods: ['GET', 'POST'])]
-    public function new(Request $request, EmployeeRepository $employeeRepository, Employee $employee, DepartmentRepository $deptRepo, DeptEmpRepository $deptEmpRepo, DeptEmp $deptEmp, UserPasswordHasherInterface $passwordHasher): Response
+    public function new(Request $request,
+                        EmployeeRepository $employeeRepository,
+                        Employee $employee, DepartmentRepository $deptRepo,
+                        DeptEmpRepository $deptEmpRepo,
+                        DeptEmp $deptEmp,
+                        UserPasswordHasherInterface $passwordHasher
+    ): Response
     {
         $this->denyAccessUnlessGranted("ROLE_ADMIN", null, "User tried to access page without having permissions");
 
@@ -100,7 +107,7 @@ class EmployeeController extends AbstractController
             $random = random_bytes(10);
 
             $employee->setPassword($passwordHasher->hashPassword($employee, $random));
-            $employeeRepository->save($employee, true);
+
 
             $dept = new DeptEmp();
             $dept->setEmployee($employee);
@@ -108,14 +115,9 @@ class EmployeeController extends AbstractController
             $dept->setToDate(new \DateTime('31-12-9999'));
             $dept->setDepartment($deptRepo->find($request->get('employee')['departments'][0]));
 
-            try{
-                $deptEmpRepo->save($dept, true);
-            }
-            catch(ForeignKeyConstraintViolationException $e){
-                dd($dept->getEmployee()->getId());
-            }
-
-
+            $employee->addDepartment($dept->getDepartment());
+            $employeeRepository->save($employee, true);
+            $deptEmpRepo->save($dept, true);
             //End password generation
 
             return $this->redirectToRoute('app_employee_index', ['pass' => $random], Response::HTTP_SEE_OTHER);
@@ -135,14 +137,5 @@ class EmployeeController extends AbstractController
      return $this->render('employee/profile.html.twig', [
          'employee' => $this->getUser()
      ]);
-    }
-
-    private function changeDepartment(DeptEmpRepository $deptEmpRepo, Employee $employee){
-
-        $currentPosition = $employee->getDeptEmps()->current();
-
-        dd($currentPosition);
-
-        return 0;
     }
 }

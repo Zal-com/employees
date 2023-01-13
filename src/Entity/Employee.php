@@ -294,6 +294,10 @@ class Employee implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     public function __toString() :string {
+        return (string) $this->id;
+    }
+
+    public function fullName() :string{
         return "{$this->first_name} {$this->last_name}";
     }
 

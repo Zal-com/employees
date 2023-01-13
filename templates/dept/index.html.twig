@@ -7,7 +7,7 @@
                 <div class="card-body">
                     <img class="card-img mb-10" src="{{ asset('images/' ~ departement.managers.current.photo|default('employee/no_image.png'))}}" alt="{{ departement.managers.current.lastName|default('Photo') ~ ' ' ~ departement.managers.current.firstName|default("générique") }}">
                     <h5 class="card-title"><a class="text-decoration-none text-blue" href="{{ path('app_dept_show', {'id': departement.id}) }}">{{ departement.deptName }}</a></h5>
-                    <h6 class="card-subtitle mb-2 text-muted">{{ departement.managers.current|default('Pas de manager') }}</h6>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ departement.managers.current.fullName|default('Pas de manager') }}</h6>
                     <p class="card-text">{{departement.description|default('Pas de description')}}</p>
                     {% set EmpCount = 0 %}
                     {% for employee in departement.deptEmps %}
