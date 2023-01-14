@@ -15,8 +15,8 @@
                 <p class="card-text"><b>N° d'identification : </b>{{ employee.id }}</p>
                 <p class="card-text"><b>Departement : </b>{{ employee.departments.current.deptName|default }}</p>
                 <p class="card-text"><b>E-mail : </b>{{ employee.email }}</p>
-                <a href="#" class="btn btn-secondary">Modifier la photo</a>
-                <a href="#" class="btn btn-danger">Changer le mot de passe</a>
+                <a href="{{ path('app_employee_editpicture', {id : employee.id}) }}" class="btn btn-secondary">Modifier la photo</a>
+                <a href="{{ path('app_employee_changepassword', {id : employee.id}) }}" class="btn btn-danger">Changer le mot de passe</a>
 
             </div>
             <div class="w-100"></div>

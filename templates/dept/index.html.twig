@@ -10,12 +10,13 @@
                     <h6 class="card-subtitle mb-2 text-muted">{{ departement.managers.current.fullName|default('Pas de manager') }}</h6>
                     <p class="card-text">{{departement.description|default('Pas de description')}}</p>
                     {% set EmpCount = 0 %}
+                    {#
                     {% for employee in departement.deptEmps %}
                         {% if employee.toDate == date('9999-01-01') %}
                             {% set EmpCount = EmpCount + 1 %}
                         {% endif %}
                     {% endfor %}
-
+                    #}
                     <h6 class="card-subtitle mb-1">{{ EmpCount }} employés</h6>
                 </div>
                 <div class="card-footer">

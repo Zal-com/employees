@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\Department;
 use App\Entity\DeptEmp;
 use App\Entity\Employee;
+use App\Form\EmployeePasswordType;
+use App\Form\EmployeePicType;
 use App\Form\EmployeeType;
 use App\Repository\DepartmentRepository;
 use App\Repository\DeptEmpRepository;
@@ -16,6 +18,9 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use Symfony\Component\Routing\Requirement\Requirement;
+use App\Controller\MailerController;
+use Symfony\Component\Mailer\Mailer;
+use Symfony\Component\Mailer\MailerInterface;
 
 #[Route('/employees')]
 class EmployeeController extends AbstractController
@@ -39,6 +44,7 @@ class EmployeeController extends AbstractController
     public function edit(Request $request, Employee $employee, EmployeeRepository $employeeRepository, DeptEmpRepository $deptEmpRepo): Response
     {
         $this->denyAccessUnlessGranted("ROLE_ADMIN", null, 'User tried to access page without having permissions');
+
         $form = $this->createForm(EmployeeType::class, $employee);
         $form->handleRequest($request);
 
@@ -59,6 +65,8 @@ class EmployeeController extends AbstractController
                 $this->addFlash('error','The employee has not been updated.');
             }
         }
+
+
 
         return $this->renderForm('employee/edit.html.twig', [
             'employee' => $employee,
@@ -88,7 +96,8 @@ class EmployeeController extends AbstractController
                         Employee $employee, DepartmentRepository $deptRepo,
                         DeptEmpRepository $deptEmpRepo,
                         DeptEmp $deptEmp,
-                        UserPasswordHasherInterface $passwordHasher
+                        UserPasswordHasherInterface $passwordHasher,
+                        MailerInterface $mailer,
     ): Response
     {
         $this->denyAccessUnlessGranted("ROLE_ADMIN", null, "User tried to access page without having permissions");
@@ -120,6 +129,9 @@ class EmployeeController extends AbstractController
             $deptEmpRepo->save($dept, true);
             //End password generation
 
+            //Envoi du mail avec les credentials
+
+//redirect vers mailer, puis redirect en fonction du referrer
             return $this->redirectToRoute('app_employee_index', ['pass' => $random], Response::HTTP_SEE_OTHER);
         }
 
@@ -132,10 +144,57 @@ class EmployeeController extends AbstractController
     #[Route('/profile', name: 'app_employee_profile', methods: ['GET', 'POST'])]
     public function profile(EmployeeRepository $employees): Response
     {
-     $this->denyAccessUnlessGranted("ROLE_USER");
+        $this->denyAccessUnlessGranted("ROLE_USER");
 
-     return $this->render('employee/profile.html.twig', [
-         'employee' => $this->getUser()
-     ]);
+        return $this->render('employee/profile.html.twig', [
+            'employee' => $this->getUser()
+        ]);
+    }
+
+    #[Route('/profile/{id}/changePassword', name: 'app_employee_changepassword', methods: ['GET', 'POST'])]
+    public function changePassword(EmployeeRepository $employeeRepo, Request $request, Employee $employee ) : Response{
+        //TODO Empecher l'acces si l'user n'a pas le meme id
+        $user = $this->getUser()->getUserIdentifier();
+        //TODO comparer avec id dans la request
+        //$this->denyAccessUnlessGranted("IS_AUTHENTICATED_FULLY");
+
+        $form = $this->createForm(EmployeePasswordType::class, $employee);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $employee->setPassword(password_hash($form->get('plainPassword')->getViewData()['first'], PASSWORD_BCRYPT));
+            $employeeRepo->save($employee, true);
+
+            return $this->redirectToRoute('app_employee_profile', ['id' => $employee->getId()], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('employee/changePassword.html.twig', [
+            'employee' => $this->getUser(),
+            'form' => $form,
+        ]);
+    }
+
+    #[Route('/profile/{id}/editPicture', name: 'app_employee_editpicture', methods: ['GET', 'POST'])]
+    public function editPicture(EmployeeRepository $employeeRepo, Employee $employee, Request $request) : Response {
+        //TODO Empecher l'acces si l'user n'a pas le meme id
+        $this->denyAccessUnlessGranted("IS_AUTHENTICATED_FULLY");
+
+        $form = $this->createForm(EmployeePicType::class, $employee);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $file = $form->get('photo')->getData();
+            $file->move('../public/images/employee', $file->getClientOriginalName());
+
+            $employee->setPhoto('employee/' . $file->getClientOriginalName());
+            $employeeRepo->save($employee, true);
+
+            return $this->redirectToRoute('app_employee_profile', ['id' => $employee->getId()], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('employee/changePicture.html.twig', [
+            'employee' => $this->getUser(),
+            'form' => $form,
+        ]);
     }
 }

@@ -36,7 +36,8 @@ security:
     access_control:
          - { path: ^/admin, roles: ROLE_ADMIN }
          - { path: ^/manage, roles: ROLE_MANAGER }
-         - { path: ^/profile, roles: ROLE_USER }
+         - { path: ^/employees/profile/, roles: ROLE_USER }
+         #TODO trouver comment inclure sous chemins
 
 when@test:
     security:

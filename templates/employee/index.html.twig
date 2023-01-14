@@ -24,6 +24,7 @@
                 <th>Photo</th>
                 <th>Email</th>
                 <th>Date embauche</th>
+                <th>Departement</th>
                 <th>actions</th>
             </tr>
         </thead>
@@ -38,10 +39,12 @@
                 <td><img style="height: 70px" src="{{ asset('images/' ~ employee.photo|default('employee/no_image.png'))  }}"></td>
                 <td>{{ employee.email }}</td>
                 <td>{{ employee.hireDate ? employee.hireDate|date('d/m/Y') : '' }}</td>
+                <td>{{ employee.departments.current.deptName|default }}</td>
                 <td>
                     <a href="{{ path('app_employee_show', {'id': employee.id}) }}">show</a>
                     <a href="{{ path('app_employee_edit', {'id': employee.id}) }}">edit</a>
                 </td>
+
             </tr>
         {% else %}
             <tr>
