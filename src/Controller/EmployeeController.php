@@ -11,16 +11,21 @@ use App\Form\EmployeeType;
 use App\Repository\DepartmentRepository;
 use App\Repository\DeptEmpRepository;
 use App\Repository\EmployeeRepository;
+use ContainerBfGMnRY\getEmployeeControllerService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mailer\Transport;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use Symfony\Component\Routing\Requirement\Requirement;
-use App\Controller\MailerController;
 use Symfony\Component\Mailer\Mailer;
-use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Address;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use function Sodium\randombytes_random16;
 
 #[Route('/employees')]
 class EmployeeController extends AbstractController
@@ -113,7 +118,7 @@ class EmployeeController extends AbstractController
 
             $employee->setId($id);
             //generate random password and sets it
-            $random = random_bytes(10);
+            $random = md5(rand(10, 10));
 
             $employee->setPassword($passwordHasher->hashPassword($employee, $random));
 
@@ -124,15 +129,15 @@ class EmployeeController extends AbstractController
             $dept->setToDate(new \DateTime('31-12-9999'));
             $dept->setDepartment($deptRepo->find($request->get('employee')['departments'][0]));
 
-            $employee->addDepartment($dept->getDepartment());
             $employeeRepository->save($employee, true);
             $deptEmpRepo->save($dept, true);
             //End password generation
 
             //Envoi du mail avec les credentials
+            //redirect vers mailer, puis redirect en fonction du referrer
+            self::sendCreateMail($employee, $random);
 
-//redirect vers mailer, puis redirect en fonction du referrer
-            return $this->redirectToRoute('app_employee_index', ['pass' => $random], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_employee_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->renderForm('employee/create.html.twig', [
@@ -153,10 +158,15 @@ class EmployeeController extends AbstractController
 
     #[Route('/profile/{id}/changePassword', name: 'app_employee_changepassword', methods: ['GET', 'POST'])]
     public function changePassword(EmployeeRepository $employeeRepo, Request $request, Employee $employee ) : Response{
-        //TODO Empecher l'acces si l'user n'a pas le meme id
-        $user = $this->getUser()->getUserIdentifier();
-        //TODO comparer avec id dans la request
-        //$this->denyAccessUnlessGranted("IS_AUTHENTICATED_FULLY");
+        //User a besoin d'etre authentifié pour accéder à la page
+        $this->denyAccessUnlessGranted("IS_AUTHENTICATED_FULLY");
+
+        $userId = $this->getUser()->getId();
+
+        //User ne peut modifier que son propre mot de passe
+        if($userId != $request->get('id')){
+            return $this->redirectToRoute('app_employee_profile', ['id' => $userId], Response::HTTP_SEE_OTHER);
+        }
 
         $form = $this->createForm(EmployeePasswordType::class, $employee);
         $form->handleRequest($request);
@@ -176,8 +186,15 @@ class EmployeeController extends AbstractController
 
     #[Route('/profile/{id}/editPicture', name: 'app_employee_editpicture', methods: ['GET', 'POST'])]
     public function editPicture(EmployeeRepository $employeeRepo, Employee $employee, Request $request) : Response {
-        //TODO Empecher l'acces si l'user n'a pas le meme id
+        //User a besoin d'etre authentifié pour accéder à la page
         $this->denyAccessUnlessGranted("IS_AUTHENTICATED_FULLY");
+
+        $userId = $this->getUser()->getId();
+
+        //User ne peut modifier que son propre mot de passe
+        if($userId != $request->get('id')){
+            return $this->redirectToRoute('app_employee_profile', ['id' => $userId], Response::HTTP_SEE_OTHER);
+        }
 
         $form = $this->createForm(EmployeePicType::class, $employee);
         $form->handleRequest($request);
@@ -196,5 +213,39 @@ class EmployeeController extends AbstractController
             'employee' => $this->getUser(),
             'form' => $form,
         ]);
+    }
+
+    private function sendCreateMail(Employee $employee, $password){
+
+        $password = utf8_encode($password);
+
+        $transport = Transport::fromDsn('smtp://zalcom69@gmail.com:xonfuupggibhvzjb@smtp.gmail.com:587');
+
+        $mailer = new Mailer($transport);
+
+        $email = (new Email())
+            ->from('employees@test.com')
+            ->to($employee->getEmail())
+            //->cc('cc@example.com')
+            //->bcc('bcc@example.com')
+            //->replyTo('fabien@example.com')
+            //->priority(Email::PRIORITY_HIGH)
+            ->subject('Bienvenu.e chez nous !')
+            ->html("<h1>Bienvenu.e chez nous!</h1>
+                <div>
+                    <p>Vos identifiants de connexion au portail des employés ont été créés.</p>
+                    <p>Nous vous conseillons de vous rendre sans plus attendre sur la plateforme afin de modifier votre mot de passe</p>
+                    <ul>Vos identifiants :
+                    <li>E-mail : {$employee->getEmail()}</li>
+                    <li>Mot de passe : {$password}</li>
+                    </ul>
+                    </div>");
+
+        try {
+            $mailer->send($email);
+        } catch (TransportExceptionInterface $e) {
+            echo print_r($e, TRUE);
+        }
+
     }
 }

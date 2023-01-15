@@ -37,7 +37,6 @@ security:
          - { path: ^/admin, roles: ROLE_ADMIN }
          - { path: ^/manage, roles: ROLE_MANAGER }
          - { path: ^/employees/profile/, roles: ROLE_USER }
-         #TODO trouver comment inclure sous chemins
 
 when@test:
     security:

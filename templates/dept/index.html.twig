@@ -10,14 +10,20 @@
                     <h6 class="card-subtitle mb-2 text-muted">{{ departement.managers.current.fullName|default('Pas de manager') }}</h6>
                     <p class="card-text">{{departement.description|default('Pas de description')}}</p>
                     {% set EmpCount = 0 %}
-                    {#
+
                     {% for employee in departement.deptEmps %}
-                        {% if employee.toDate == date('9999-01-01') %}
+                        {% if employee.toDate == date('9999-12-31') %}
                             {% set EmpCount = EmpCount + 1 %}
                         {% endif %}
                     {% endfor %}
-                    #}
-                    <h6 class="card-subtitle mb-1">{{ EmpCount }} employés</h6>
+
+                    {% if EmpCount == 0 %}
+                        <h6 class="card-subtitle mb-1">Pas d'employés</h6>
+                    {% elseif EmpCount == 1 %}
+                        <h6 class="card-subtitle mb-1">{{ EmpCount }} employé</h6>
+                        {% else %}
+                            <h6 class="card-subtitle mb-1">{{ EmpCount }} employés</h6>
+                    {% endif %}
                 </div>
                 <div class="card-footer">
                     <a href="#" class="card-link text-decoration-none text-black">Postes à pourvoir</a>

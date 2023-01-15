@@ -1,6 +1,8 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
+
+    <h2>Manager</h2>
 <table>
     <tr>
         <th>ID</th>
@@ -9,10 +11,29 @@
         <th>Photo</th>
     </tr>
     <tr>
-        <td>{{ departement.id }}</td>
-        <td>{{ departement.deptName }}</td>
+        <td>{{ departement.managers.current.firstName|default }}</td>
+        <td>{{ departement.managers.current.lestName|default }}</td>
         <td>{{ manager.lastName|default }} {{ manager.firstName|default('Pas de manager') }}</td>
         <td><img style="max-height: 70px" src="{{ asset('images/' ~ departement.managers.current.photo|default('employee/no_image.png'))  }}"></td>
     </tr>
 </table>
+
+    <h2>Employés</h2>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Nom</th>
+            <th>Manager</th>
+            <th>Photo</th>
+        </tr>
+        {% for employee in departement.deptEmps.toArray %}
+        <tr>
+            {{ dump(employee) }}
+            <td>{{ employee.firstName|default }}</td>
+            <td>{{ departement.deptName }}</td>
+            <td>{{ manager.lastName|default }} {{ manager.firstName|default('Pas de manager') }}</td>
+            <td><img style="max-height: 70px" src="{{ asset('images/' ~ departement.managers.current.photo|default('employee/no_image.png'))  }}"></td>
+        </tr>
+        {% endfor %}
+    </table>
 {% endblock %}
