@@ -58,17 +58,15 @@ class Employee implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'employee', targetEntity: Demand::class)]
     private Collection $demands;
 
-    #[ORM\JoinTable('dept_emp')]
-    #[ORM\JoinColumn(name: 'emp_no', referencedColumnName: 'emp_no')]
-    #[ORM\InverseJoinColumn(name:'dept_no', referencedColumnName: 'dept_no')]
-    #[ORM\OneToMany(mappedBy: 'employee', targetEntity: DeptEmp::class)]
-    private Collection $deptEmps;
 
     #[ORM\Column(length: 150)]
     private ?string $password = null;
 
     #[ORM\Column(type: 'json')]
     private array $roles = [];
+
+    #[ORM\OneToMany(mappedBy: 'employee', targetEntity: DeptEmp::class)]
+    private Collection $deptEmp;
 
     //Storie departments
 
@@ -79,6 +77,7 @@ class Employee implements UserInterface, PasswordAuthenticatedUserInterface
         $this->salaries = new ArrayCollection();
         $this->demands = new ArrayCollection();
         $this->deptEmps = new ArrayCollection();
+        $this->deptEmp = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -382,5 +381,13 @@ class Employee implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    /**
+     * @return Collection<int, DeptEmp>
+     */
+    public function getDeptEmp(): Collection
+    {
+        return $this->deptEmp;
     }
 }

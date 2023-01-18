@@ -11,7 +11,7 @@
                     <p class="card-text">{{departement.description|default('Pas de description')}}</p>
                     {% set EmpCount = 0 %}
 
-                    {% for employee in departement.deptEmps %}
+                    {% for employee in departement.deptEmp %}
                         {% if employee.toDate == date('9999-12-31') %}
                             {% set EmpCount = EmpCount + 1 %}
                         {% endif %}

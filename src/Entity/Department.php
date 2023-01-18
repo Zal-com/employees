@@ -34,16 +34,16 @@ class Department
     #[ORM\ManyToMany(targetEntity: Employee::class, inversedBy: 'departments')]
     private Collection $managers;
 
-    #[ORM\JoinTable(name: 'dept_emp')]
-    #[ORM\JoinColumn(name: 'dept_no', referencedColumnName: 'dept_no')]
-    #[ORM\InverseJoinColumn(name:'emp_no', referencedColumnName: 'emp_no')]
-    #[ORM\OneToMany(targetEntity: DeptEmp::class, mappedBy: 'departments')]
-    private Collection $deptEmps;
+
+    #[ORM\OneToMany(mappedBy: 'department', targetEntity: DeptEmp::class)]
+    private Collection $deptEmp;
+
 
     public function __construct()
     {
         $this->managers = new ArrayCollection();
         $this->deptEmps = new ArrayCollection();
+        $this->deptEmp = new ArrayCollection();
     }
 
     public function getId(): ?string
@@ -161,5 +161,13 @@ class Department
 
     public function __toString(){
         return $this->id;
+    }
+
+    /**
+     * @return Collection<int, DeptEmp>
+     */
+    public function getDeptEmp(): Collection
+    {
+        return $this->deptEmp;
     }
 }

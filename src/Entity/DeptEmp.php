@@ -18,14 +18,14 @@ class DeptEmp
     private ?\DateTimeInterface $to_date = null;
 
     #[ORM\Id]
-    #[ORM\Column(name: 'emp_no')]
-    #[ORM\ManyToOne(inversedBy: 'emp_no', targetEntity: Employee::class)]
-    private ?Employee $employee = null;
+    #[ORM\ManyToOne(inversedBy: 'deptEmp')]
+    #[ORM\JoinColumn(name: 'dept_no', referencedColumnName: 'dept_no')]
+    private ?Department $department = null;
 
     #[ORM\Id]
-    #[ORM\Column(name: 'dept_no')]
-    #[ORM\ManyToOne(inversedBy: 'dept_no', targetEntity: Department::class)]
-    private ?Department $department = null;
+    #[ORM\ManyToOne(inversedBy: 'deptEmp')]
+    #[ORM\JoinColumn(name: 'emp_no', referencedColumnName: 'emp_no')]
+    private ?Employee $employee = null;
 
     public function getId(): ?int
     {
