@@ -42,7 +42,6 @@ class Department
     public function __construct()
     {
         $this->managers = new ArrayCollection();
-        $this->deptEmps = new ArrayCollection();
         $this->deptEmp = new ArrayCollection();
     }
 
@@ -132,15 +131,15 @@ class Department
     /**
      * @return Collection<int, DeptEmp>
      */
-    public function getDeptEmps(): Collection
+    public function getDeptEmp(): Collection
     {
-        return $this->deptEmps;
+        return $this->deptEmp;
     }
 
     public function addDeptEmp(DeptEmp $deptEmp): self
     {
-        if (!$this->deptEmps->contains($deptEmp)) {
-            $this->deptEmps->add($deptEmp);
+        if (!$this->deptEmp->contains($deptEmp)) {
+            $this->deptEmp->add($deptEmp);
             $deptEmp->setDepartment($this);
         }
 
@@ -161,13 +160,5 @@ class Department
 
     public function __toString(){
         return $this->id;
-    }
-
-    /**
-     * @return Collection<int, DeptEmp>
-     */
-    public function getDeptEmp(): Collection
-    {
-        return $this->deptEmp;
     }
 }

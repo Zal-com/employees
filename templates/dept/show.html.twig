@@ -24,11 +24,13 @@
             <th>Photo</th>
         </tr>
         {% for deptEmp in departement.deptEmp %}
+            {% if departement.managers is not empty and departement.managers.current.id != deptEmp.employee.id %}
         <tr>
             <td>{{ deptEmp.employee.lastName|default }}</td>
-            <td>{{ deptEmp.employee.fisrtName|default }}</td>
+            <td>{{ deptEmp.employee.firstName|default }}</td>
             <td><img style="max-height: 70px" src="{{ asset('images/' ~ deptEmp.employee.photo|default('employee/no_image.png'))  }}"></td>
         </tr>
+            {% endif %}
         {% endfor %}
     </table>
 {% endblock %}

@@ -21,11 +21,11 @@ class DeptType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-       $deptEmps = $options['data']->getDeptEmps();
+       $deptEmps = $options['data']->getDeptEmp();
        $employees = [];
 
-        foreach ($deptEmps as $employee) {
-            array_push($employees, $employee->getId());
+        foreach ($deptEmps as $deptEmp) {
+            array_push($employees, $deptEmp->getEmployee());
        }
 
         $builder
@@ -35,8 +35,9 @@ class DeptType extends AbstractType
             ->add('roi_url', UrlType::class, ['label' => 'Lien du ROI : '])
             ->add('managers', EntityType::class, [
                 'label' => 'Manager : ',
-                'class' => Employee::class,
-                'multiple' => true,
+                'class' => DeptEmp::class,
+                'choice_label' => 'employee.lastName',
+                'multiple' => false,
                     ]
             //->add('departments')
         );

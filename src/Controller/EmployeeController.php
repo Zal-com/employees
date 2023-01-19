@@ -55,10 +55,32 @@ class EmployeeController extends AbstractController
 
         if ($form->isSubmitted()) {
             if($form->isValid()) {
-                $file = $form->get('photo')->getData();
-                $file->move('../public/images/employee', $file->getClientOriginalName());
+                if (!empty($form->get('photo')->getData())) {
+                    $file = $form->get('photo')->getData();
+                    $file->move('../public/images/employee', $file->getClientOriginalName());
 
-                $employee->setPhoto('employee/' . $file->getClientOriginalName());
+                    $employee->setPhoto('employee/' . $file->getClientOriginalName());
+                }
+
+                //Récupération de la derniere position de l'employé
+                $lastPosition = $deptEmpRepo->findBy(['employee' => $employee->getId()])[0];
+
+                //Modification du DeptEmp actuel si changement
+                if($lastPosition->getDepartment()->getId() != $employee->getDepartments()[0]->getId()){
+                    $lastPosition->setToDate(new \DateTime('now'));
+                    $deptEmpRepo->save($lastPosition, true);
+                }
+
+
+                //Creation du nouveau DeptEmp
+                $newDeptEmp = new DeptEmp();
+                $newDeptEmp->setEmployee($employee);
+                $newDeptEmp->setDepartment($employee->getDepartments()->last());
+                $newDeptEmp->setFromDate(new \DateTime('now'));
+                $newDeptEmp->setToDate(new \DateTime('31-12-9999'));
+
+
+                $deptEmpRepo->save($newDeptEmp, true);
 
                 $employeeRepository->save($employee, true);
 
@@ -122,7 +144,7 @@ class EmployeeController extends AbstractController
 
             $employee->setPassword($passwordHasher->hashPassword($employee, $random));
 
-
+            //Creation d'un nouveau DeptEmp avec le nouveau département
             $dept = new DeptEmp();
             $dept->setEmployee($employee);
             $dept->setFromDate(new \DateTime('now'));
@@ -131,7 +153,6 @@ class EmployeeController extends AbstractController
 
             $employeeRepository->save($employee, true);
             $deptEmpRepo->save($dept, true);
-            //End password generation
 
             //Envoi du mail avec les credentials
             //redirect vers mailer, puis redirect en fonction du referrer

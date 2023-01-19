@@ -27,10 +27,6 @@ class DeptEmp
     #[ORM\JoinColumn(name: 'emp_no', referencedColumnName: 'emp_no')]
     private ?Employee $employee = null;
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
 
     public function getFromDate(): ?\DateTimeInterface
     {

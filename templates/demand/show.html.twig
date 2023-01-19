@@ -3,36 +3,41 @@
 {% block title %}Demand{% endblock %}
 
 {% block body %}
-    <h1>Demand</h1>
+    <h1>Demands</h1>
 
     <table class="table">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Employee</th>
+            <th>Type</th>
+            <th>About</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+        </thead>
         <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ demand.id }}</td>
-            </tr>
-            <tr>
-                <th>Employee</th>
-                <td>{{ demand.employee }}</td>
-            </tr>
-            <tr>
-                <th>Type</th>
-                <td>{{ demand.type }}</td>
-            </tr>
-            <tr>
-                <th>About</th>
-                <td>{{ demand.about }}</td>
-            </tr>
-            <tr>
-                <th>Status</th>
-                <td>{{ demand.status ? 'Yes' : 'No' }}</td>
-            </tr>
+        <tbody>
+        {% for demand in demands %}
+        <tr>
+            <td>{{ demand.id }}</td>
+            <td>{{ demand.employee }}</td>
+            <td>{{ demand.type }}</td>
+            <td>{{ demand.about }}</td>
+            {% if demand.status is null %}
+            <td>En cours d'étude</td>
+            {% else %}
+            <td>{{ demand.status ? 'Yes' : 'No' }}</td>
+                {% endif %}
+            <td><a href="{{ path('app_demand_update', {'id' : demand.id, 'status' : 1}) }}" class="btn btn-success">Accepter</a>&nbsp;&nbsp;<a href="{{ path('app_demand_update', {'id' : demand.id, 'status' : 0}) }}" class="btn btn-danger">Refuser</a></td>
+        </tr>
+        {% endfor %}
         </tbody>
     </table>
 
     <a href="{{ path('app_demand_index') }}">back to list</a>
 
-    <a href="{{ path('app_demand_edit', {'id': demand.id}) }}">edit</a>
+    {# <a href="{{ path('app_demand_edit', {'id': demand.id}) }}">edit</a>
 
-    {{ include('demand/_delete_form.html.twig') }}
+    {{ include('demand/_delete_form.html.twig') }}#}
 {% endblock %}
